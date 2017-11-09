@@ -159,6 +159,8 @@ if not nickname:
         if oldNickname:"""
         if not nickname:
             raise ClientError ('No nickname provided.')
+        if type(nickname)==str:
+            nickname=b(nickname)
         if not self.NICKNAME.match(d(nickname)):
             raise ClientError ('Invalid nickname: %s' % nickname)
         if nickname == self.nickname:
@@ -172,8 +174,8 @@ if not nickname:
         self.server.users[nickname] = self.wfile
         self.nickname = nickname
         if oldNickname:
-            self.broadcast('%s is now known as %s' % (oldNickname, self.nickname))
-
+            self.broadcast('%s is now known as %s' % (d(oldNickname),
+                                                      d(self.nickname)))
     def quitCommand(self, partingWords):
         """Tells the other users that this user has quit, then makes
         sure the handler will close this connection."""
@@ -206,7 +208,7 @@ if not nickname:
         if not user:
             self.privateMessage("No such user: '%s'"%nick)
             return
-        msg="[Private from %s] %s\r\n"%(self.nickname,msg)
+        msg="[Private from %s] %s\r\n"%(d(self.nickname),msg)
         write_p(msg)
 ##        write_p("%s:%s"%(user,type(user)),1)
         user.write(b(msg))
